@@ -1,0 +1,261 @@
+{
+    "info": {
+        "name": "Rindegastos MVP (Laravel API)",
+        "_postman_id": "b3a3d2c4-1111-2222-3333-444455556666",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://127.0.0.1:8000/api"
+        },
+        {
+            "key": "token",
+            "value": ""
+        },
+        {
+            "key": "expenseId",
+            "value": ""
+        },
+        {
+            "key": "reportId",
+            "value": ""
+        }
+    ],
+    "item": [
+        {
+            "name": "Auth - Login (Employee)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/login",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "login"
+                    ]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"email\": \"employee@test.com\",\n  \"password\": \"password\",\n  \"device_name\": \"postman\"\n}"
+                }
+            },
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "const json = pm.response.json();",
+                            "pm.collectionVariables.set('token', json.token);",
+                            "pm.test('token saved', () => pm.expect(json.token).to.be.a('string'));"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Expenses - Create",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/expenses",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "expenses"
+                    ]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"category_id\": 1,\n  \"expense_date\": \"2026-02-26\",\n  \"vendor\": \"OXXO\",\n  \"amount\": 120.50,\n  \"tax_iva\": 0,\n  \"payment_method\": \"CASH\",\n  \"receipt_type\": \"TICKET\"\n}"
+                }
+            },
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "const json = pm.response.json();",
+                            "pm.collectionVariables.set('expenseId', json.id);",
+                            "pm.test('expenseId saved', () => pm.expect(json.id).to.be.a('number'));"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Expenses - Upload XML (multipart)",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/expenses/{{expenseId}}/files",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "expenses",
+                        "{{expenseId}}",
+                        "files"
+                    ]
+                },
+                "body": {
+                    "mode": "formdata",
+                    "formdata": [
+                        {
+                            "key": "type",
+                            "value": "XML",
+                            "type": "text"
+                        },
+                        {
+                            "key": "file",
+                            "type": "file",
+                            "src": ""
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Expenses - Parse CFDI XML",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/expenses/{{expenseId}}/parse-cfdi",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "expenses",
+                        "{{expenseId}}",
+                        "parse-cfdi"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "Reports - Create",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/reports",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "reports"
+                    ]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"title\": \"Viaje CDMX\",\n  \"period_start\": \"2026-02-26\",\n  \"period_end\": \"2026-02-26\"\n}"
+                }
+            },
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "const json = pm.response.json();",
+                            "pm.collectionVariables.set('reportId', json.id);",
+                            "pm.test('reportId saved', () => pm.expect(json.id).to.be.a('number'));"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Reports - Add Expense",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    },
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/reports/{{reportId}}/add-expense",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "reports",
+                        "{{reportId}}",
+                        "add-expense"
+                    ]
+                },
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"expense_id\": {{expenseId}}\n}"
+                }
+            }
+        },
+        {
+            "name": "Reports - Submit",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/reports/{{reportId}}/submit",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "reports",
+                        "{{reportId}}",
+                        "submit"
+                    ]
+                }
+            }
+        }
+    ]
+}
