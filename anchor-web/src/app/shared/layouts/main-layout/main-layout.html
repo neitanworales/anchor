@@ -1,1 +1,40 @@
-<p>main-layout works!</p>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" routerLink="/dashboard">Rindegastos MVP</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+            aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarMain">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/dashboard">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/expenses">Gastos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/reports">Reportes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/approvals">Aprobaciones</a>
+                </li>
+            </ul>
+
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-light btn-sm" (click)="changeCompany()">
+                    Cambiar empresa
+                </button>
+                <button class="btn btn-danger btn-sm" (click)="logout()">
+                    Cerrar sesión
+                </button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="container py-4">
+    <router-outlet></router-outlet>
+</main>

@@ -1,1 +1,52 @@
-<p>company-selector works!</p>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <h2 class="mb-3">Selecciona una empresa</h2>
+                    <p class="text-muted">
+                        Elige la empresa con la que deseas trabajar en este momento.
+                    </p>
+
+                    <div *ngIf="loading" class="alert alert-info">
+                        Cargando empresas...
+                    </div>
+
+                    <div *ngIf="error" class="alert alert-danger">
+                        {{ error }}
+                    </div>
+
+                    <div *ngIf="!loading && companies.length === 0" class="alert alert-warning">
+                        No tienes empresas asignadas.
+                    </div>
+
+                    <div class="row g-3" *ngIf="!loading && companies.length > 0">
+                        <div class="col-md-6" *ngFor="let company of companies">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ company.name }}</h5>
+                                    <p class="card-text text-muted mb-2">
+                                        Slug: {{ company.slug }}
+                                    </p>
+                                    <p class="mb-3">
+                                        <span class="badge bg-secondary">{{ company.role }}</span>
+                                    </p>
+
+                                    <button class="btn btn-primary w-100" (click)="selectCompany(company)">
+                                        Entrar a esta empresa
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button class="btn btn-outline-secondary" routerLink="/login">
+                            Volver al login
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-expense-list',
-  imports: [],
-  templateUrl: './expense-list.html',
-  styleUrl: './expense-list.scss',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './expense-list.html'
 })
-export class ExpenseList {
-
-}
+export class ExpenseList {}
