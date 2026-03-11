@@ -1,6 +1,33 @@
-<div class="card shadow-sm">
-    <div class="card-body">
-        <h3>Gastos</h3>
-        <p class="text-muted mb-0">Aquí irá el listado de gastos.</p>
-    </div>
-</div>
+<thead class="table-light">
+    <tr>
+        <th>ID</th>
+        <th>Fecha</th>
+        <th>Categoría</th>
+        <th>Proveedor</th>
+        <th>Monto</th>
+        <th>Tipo CFDI</th>
+        <th>UUID CFDI</th>
+        <th>Estado</th>
+        <th>Adjuntos</th>
+    </tr>
+</thead>
+<tbody>
+    <tr *ngFor="let expense of expenses">
+        <td>{{ expense.id }}</td>
+        <td>{{ expense.expense_date }}</td>
+        <td>{{ expense.category?.name || expense.category_id }}</td>
+        <td>{{ expense.vendor || '-' }}</td>
+        <td>{{ expense.amount | number:'1.2-2' }} {{ expense.currency }}</td>
+        <td>{{ expense.cfdi_type || expense.receipt_type }}</td>
+        <td>{{ expense.cfdi_uuid || '-' }}</td>
+        <td><span class="badge text-bg-secondary">{{ expense.status }}</span></td>
+        <td>
+            <ng-container *ngIf="expense.files?.length; else noFiles">
+                <span class="badge text-bg-light border me-1" *ngFor="let file of expense.files">
+                    {{ file.type }}
+                </span>
+            </ng-container>
+            <ng-template #noFiles>-</ng-template>
+        </td>
+    </tr>
+</tbody>

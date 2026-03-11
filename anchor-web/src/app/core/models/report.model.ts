@@ -1,3 +1,5 @@
+import { Expense } from './expense.model';
+
 export interface Report {
     id: number;
     company_id: number;
@@ -6,4 +8,5 @@ export interface Report {
     period_end?: string;
     status: 'DRAFT' | 'SUBMITTED' | 'APPROVED' | 'REJECTED' | 'PAID';
     total: number;
+    expenses?: Expense[];
 }

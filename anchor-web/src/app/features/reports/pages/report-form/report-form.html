@@ -1,0 +1,36 @@
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h4 class="mb-3">Nuevo reporte</h4>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Título</label>
+                <input type="text" class="form-control" formControlName="title" placeholder="Ej. Viaje Monterrey marzo">
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Periodo inicio</label>
+                <input type="date" class="form-control" formControlName="period_start">
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Periodo fin</label>
+                <input type="date" class="form-control" formControlName="period_end">
+            </div>
+
+            <div class="col-12">
+                <div *ngIf="success" class="alert alert-success mb-3">
+                    {{ success }}
+                </div>
+
+                <div *ngIf="error" class="alert alert-danger mb-3">
+                    {{ error }}
+                </div>
+
+                <button class="btn btn-primary" [disabled]="loading">
+                    {{ loading ? 'Guardando...' : 'Crear reporte' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

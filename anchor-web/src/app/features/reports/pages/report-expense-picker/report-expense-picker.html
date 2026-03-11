@@ -1,0 +1,56 @@
+<div class="card border-primary mb-4" *ngIf="visible">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Agregar gastos al reporte #{{ reportId }}</h5>
+            <button class="btn btn-outline-secondary btn-sm" (click)="close()">
+                Cerrar
+            </button>
+        </div>
+
+        <div *ngIf="loading" class="alert alert-info">
+            Cargando gastos en borrador...
+        </div>
+
+        <div *ngIf="error" class="alert alert-danger">
+            {{ error }}
+        </div>
+
+        <div *ngIf="!loading && expenses.length === 0" class="alert alert-warning">
+            No hay gastos en estado DRAFT para agregar.
+        </div>
+
+        <div class="table-responsive" *ngIf="!loading && expenses.length > 0">
+            <table class="table table-bordered align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Categoría</th>
+                        <th>Proveedor</th>
+                        <th>Monto</th>
+                        <th>Comprobante</th>
+                        <th>UUID</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let expense of expenses">
+                        <td>{{ expense.id }}</td>
+                        <td>{{ expense.expense_date }}</td>
+                        <td>{{ expense.category?.name || expense.category_id }}</td>
+                        <td>{{ expense.vendor || '-' }}</td>
+                        <td>{{ expense.amount | number:'1.2-2' }} {{ expense.currency }}</td>
+                        <td>{{ expense.receipt_type }}</td>
+                        <td>{{ expense.cfdi_uuid || '-' }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" (click)="addExpense(expense.id)"
+                                [disabled]="addingExpenseId === expense.id">
+                                {{ addingExpenseId === expense.id ? 'Agregando...' : 'Agregar' }}
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

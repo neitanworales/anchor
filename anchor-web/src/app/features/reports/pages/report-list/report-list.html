@@ -1,6 +1,97 @@
+<app-report-form (reportCreated)="onReportCreated()"></app-report-form>
+
+<app-report-expense-picker [reportId]="selectedReportId || 0" [visible]="pickerVisible" (closePicker)="closePicker()"
+    (expenseAdded)="onExpenseAdded()">
+</app-report-expense-picker>
+
 <div class="card shadow-sm">
     <div class="card-body">
-        <h3>Reportes</h3>
-        <p class="text-muted mb-0">Aquí irá el listado de reportes.</p>
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+                <h3 class="mb-0">Reportes</h3>
+                <small class="text-muted">Total: {{ total }}</small>
+            </div>
+
+            <div style="min-width: 220px;">
+                <label class="form-label">Filtrar por estado</label>
+                <select class="form-select" [(ngModel)]="selectedStatus" (change)="onStatusChange()">
+                    <option value="">Todos</option>
+                    <option value="DRAFT">DRAFT</option>
+                    <option value="SUBMITTED">SUBMITTED</option>
+                    <option value="APPROVED">APPROVED</option>
+                    <option value="REJECTED">REJECTED</option>
+                    <option value="PAID">PAID</option>
+                </select>
+            </div>
+        </div>
+
+        <div *ngIf="loading" class="alert alert-info">
+            Cargando reportes...
+        </div>
+
+        <div *ngIf="error" class="alert alert-danger">
+            {{ error }}
+        </div>
+
+        <div *ngIf="!loading && reports.length === 0" class="alert alert-warning">
+            No hay reportes registrados.
+        </div>
+
+        <div class="table-responsive" *ngIf="!loading && reports.length > 0">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Periodo</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                        <th>Gastos</th>
+                        <th style="width: 260px;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let report of reports">
+                        <td>{{ report.id }}</td>
+                        <td>{{ report.title }}</td>
+                        <td>
+                            {{ report.period_start || '-' }} a {{ report.period_end || '-' }}
+                        </td>
+                        <td>{{ report.total | number:'1.2-2' }}</td>
+                        <td>
+                            <span class="badge text-bg-secondary">{{ report.status }}</span>
+                        </td>
+                        <td>
+                            {{ report.expenses?.length || 0 }}
+                        </td>
+                        <td>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button class="btn btn-sm btn-outline-primary" (click)="openPicker(report.id)"
+                                    [disabled]="report.status !== 'DRAFT'">
+                                    Agregar gastos
+                                </button>
+
+                                <button class="btn btn-sm btn-success" (click)="submitReport(report.id)"
+                                    [disabled]="report.status !== 'DRAFT' || submittingReportId === report.id">
+                                    {{ submittingReportId === report.id ? 'Enviando...' : 'Enviar' }}
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="lastPage > 1">
+            <button class="btn btn-outline-secondary" (click)="prevPage()" [disabled]="currentPage === 1">
+                Anterior
+            </button>
+
+            <span>Página {{ currentPage }} de {{ lastPage }}</span>
+
+            <button class="btn btn-outline-secondary" (click)="nextPage()" [disabled]="currentPage === lastPage">
+                Siguiente
+            </button>
+        </div>
     </div>
 </div>

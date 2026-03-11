@@ -30,6 +30,7 @@ class Report extends Model
     {
         return $this->belongsToMany(Expense::class, 'report_expenses');
     }
+
     public function approvals()
     {
         return $this->hasMany(Approval::class);

@@ -15,12 +15,16 @@ class ReportController extends Controller
 {
     public function index(Request $request)
     {
+        $company = $request->attributes->get('company');
+
         $q = Report::query()
+            ->where('company_id', $company->id)
             ->where('user_id', $request->user()->id)
             ->with(['expenses.category', 'approvals']);
 
-        if ($request->filled('status'))
+        if ($request->filled('status')) {
             $q->where('status', $request->string('status'));
+        }
 
         return response()->json($q->orderByDesc('id')->paginate(20));
     }
