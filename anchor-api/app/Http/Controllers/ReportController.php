@@ -135,7 +135,8 @@ class ReportController extends Controller
 
     public function approve(Request $request, Report $report)
     {
-        if (!in_array($request->user()->role, ['APPROVER', 'ADMIN'], true)) {
+        $companyRole = $request->attributes->get('company_role');
+        if (!in_array($companyRole, ['APPROVER', 'ADMIN'], true)) {
             return response()->json(['message' => 'Forbidden'], 403);
         }
         if ($report->status !== 'SUBMITTED')
@@ -158,7 +159,8 @@ class ReportController extends Controller
 
     public function reject(Request $request, Report $report)
     {
-        if (!in_array($request->user()->role, ['APPROVER', 'ADMIN'], true)) {
+        $companyRole = $request->attributes->get('company_role');
+        if (!in_array($companyRole, ['APPROVER', 'ADMIN'], true)) {
             return response()->json(['message' => 'Forbidden'], 403);
         }
         if ($report->status !== 'SUBMITTED')
@@ -186,7 +188,8 @@ class ReportController extends Controller
 
     public function markPaid(Request $request, Report $report)
     {
-        if ($request->user()->role !== 'ADMIN')
+        $companyRole = $request->attributes->get('company_role');
+        if ($companyRole !== 'ADMIN')
             return response()->json(['message' => 'Forbidden'], 403);
         if ($report->status !== 'APPROVED')
             return response()->json(['message' => 'Report not APPROVED'], 409);
@@ -199,7 +202,8 @@ class ReportController extends Controller
 
     public function exportCsv(Request $request, Report $report)
     {
-        if ($request->user()->role !== 'ADMIN')
+        $companyRole = $request->attributes->get('company_role');
+        if ($companyRole !== 'ADMIN')
             return response()->json(['message' => 'Forbidden'], 403);
 
         $report->load(['user', 'expenses.category']);

@@ -6,42 +6,54 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Category;
+use App\Models\Company;
 
 class MVPSeeder extends Seeder
 {
     public function run(): void
     {
-        User::updateOrCreate(
+        $company = Company::updateOrCreate(
+            ['slug' => 'empresa-demo'],
+            ['name' => 'Empresa Demo']
+        );
+
+        $employee = User::updateOrCreate(
             ['email' => 'employee@test.com'],
-            ['name' => 'Employee', 'password' => Hash::make('password'), 'role' => 'EMPLOYEE']
+            ['name' => 'Employee', 'password' => Hash::make('password')]
         );
 
-        User::updateOrCreate(
+        $approver = User::updateOrCreate(
             ['email' => 'approver@test.com'],
-            ['name' => 'Approver', 'password' => Hash::make('password'), 'role' => 'APPROVER']
+            ['name' => 'Approver', 'password' => Hash::make('password')]
         );
 
-        User::updateOrCreate(
+        $admin = User::updateOrCreate(
             ['email' => 'admin@test.com'],
-            ['name' => 'Admin', 'password' => Hash::make('password'), 'role' => 'ADMIN']
+            ['name' => 'Admin', 'password' => Hash::make('password')]
         );
 
-        Category::updateOrCreate(['name' => 'Comidas'], [
+        $company->users()->syncWithoutDetaching([
+            $employee->id => ['role' => 'EMPLOYEE', 'is_active' => true],
+            $approver->id => ['role' => 'APPROVER', 'is_active' => true],
+            $admin->id => ['role' => 'ADMIN', 'is_active' => true],
+        ]);
+
+        Category::updateOrCreate(['company_id' => $company->id, 'name' => 'Comidas'], [
             'max_per_report' => 3000,
             'requires_cfdi' => false
         ]);
 
-        Category::updateOrCreate(['name' => 'Gasolina'], [
+        Category::updateOrCreate(['company_id' => $company->id, 'name' => 'Gasolina'], [
             'max_per_report' => 5000,
             'requires_cfdi' => false
         ]);
 
-        Category::updateOrCreate(['name' => 'Hotel'], [
+        Category::updateOrCreate(['company_id' => $company->id, 'name' => 'Hotel'], [
             'max_per_report' => 15000,
             'requires_cfdi' => true
         ]);
 
-        Category::updateOrCreate(['name' => 'Vuelo'], [
+        Category::updateOrCreate(['company_id' => $company->id, 'name' => 'Vuelo'], [
             'max_per_report' => 30000,
             'requires_cfdi' => true
         ]);

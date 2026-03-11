@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { ExpenseService } from '../../../../core/services/expense.service';
 import { Expense } from '../../../../core/models/expense.model';
 import { ExpenseForm } from '../expense-form/expense-form';
@@ -8,7 +9,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-expense-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './expense-list.html'
 })
 export class ExpenseList implements OnInit {

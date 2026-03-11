@@ -35,6 +35,13 @@ export const routes: Routes = [
             .then(m => m.ExpenseList)
       },
       {
+        path: 'expenses/new',
+        canActivate: [companyGuard],
+        loadComponent: () =>
+          import('./features/expenses/pages/expense-form/expense-form')
+            .then(m => m.ExpenseForm)
+      },
+      {
         path: 'reports',
         canActivate: [companyGuard],
         loadComponent: () =>

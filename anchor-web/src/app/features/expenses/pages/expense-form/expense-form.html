@@ -3,6 +3,14 @@
         <h4 class="mb-3">Nuevo gasto</h4>
 
         <form [formGroup]="form" (ngSubmit)="submit()" class="row g-3">
+            <div class="col-md-8">
+                <label class="form-label">Adjunto (IMG / PDF / XML)</label>
+                <input type="file" class="form-control" (change)="onFileSelected($event)">
+                <small class="text-muted" *ngIf="selectedFile">
+                    Archivo seleccionado: {{ selectedFile.name }} | Tipo detectado: {{ selectedFileType || 'NO IDENTIFICADO' }}
+                </small>
+            </div>
+
             <div class="col-md-4">
                 <label class="form-label">Categoría</label>
                 <select class="form-select" formControlName="category_id">
@@ -53,15 +61,6 @@
                     <option value="TICKET">TICKET</option>
                     <option value="CFDI">CFDI</option>
                 </select>
-            </div>
-
-            <div class="col-md-8">
-                <label class="form-label">Adjunto (IMG / PDF / XML)</label>
-                <input type="file" class="form-control" (change)="onFileSelected($event)">
-                <small class="text-muted" *ngIf="selectedFile">
-                    Archivo seleccionado: {{ selectedFile.name }} | Tipo detectado: {{ selectedFileType || 'NO
-                    IDENTIFICADO' }}
-                </small>
             </div>
 
             <div class="col-12" *ngIf="parsedCfdi">
