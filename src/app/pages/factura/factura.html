@@ -1,0 +1,269 @@
+<section class="factura-page">
+	<header class="factura-hero">
+		<div class="hero-copy">
+			<p class="eyebrow">Captura CFDI</p>
+			<h1>Factura inteligente</h1>
+			<p class="subtitle">Carga tu XML, revisa los datos y guarda la factura con trazabilidad de captura.</p>
+		</div>
+		<div class="hero-actions">
+			<label class="ghost-btn">
+				<input type="file" accept=".xml" (change)="onFilePicked($event)" hidden>
+				Cargar XML
+			</label>
+		</div>
+	</header>
+
+	<div class="factura-grid">
+		<aside class="upload-card" [class.drag-over]="isDragOver"
+			(drop)="onDrop($event)"
+			(dragover)="onDragOver($event)"
+			(dragleave)="onDragLeave($event)">
+			<div class="upload-inner">
+				<div class="upload-icon">XML</div>
+				<h3>Arrastra tu archivo</h3>
+				<p>O suelta el XML aqui para autocompletar el formulario.</p>
+				<label class="primary-btn">
+					<input type="file" accept=".xml" (change)="onFilePicked($event)" hidden>
+					Elegir archivo
+				</label>
+				<p class="file-name" *ngIf="fileName">{{ fileName }}</p>
+				<p class="hint">Compatible con CFDI 3.3 y 4.0</p>
+			</div>
+		</aside>
+
+		<main class="form-card">
+			<form #facturaForm="ngForm" (ngSubmit)="saveFactura(facturaForm)" [class.form-submitted]="formSubmitted" novalidate>
+				<div class="form-header">
+					<div>
+						<h2>Datos generales</h2>
+						<p>Verifica la informacion antes de guardar.</p>
+					</div>
+					<button class="primary-btn" type="submit" [disabled]="isSaving || facturaForm.invalid">
+						{{ isSaving ? 'Guardando...' : 'Guardar factura' }}
+					</button>
+				</div>
+
+				<div *ngIf="errorMessage" class="alert alert-error">{{ errorMessage }}</div>
+				<div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+
+				<section class="form-section">
+					<h3>Identidad fiscal</h3>
+					<div class="form-grid">
+						<label>
+							UUID
+							<input type="text" name="uuid" [(ngModel)]="form.uuid" placeholder="UUID CFDI">
+						</label>
+						<label>
+							Version CFDI <span class="required-mark">*</span>
+							<input type="text" name="versionCfdi" [(ngModel)]="form.versionCfdi" required #versionCfdi="ngModel"
+								[class.input-error]="versionCfdi.invalid && (versionCfdi.touched || formSubmitted)">
+							<span class="field-error" *ngIf="versionCfdi.invalid && (versionCfdi.touched || formSubmitted)">Obligatorio</span>
+						</label>
+						<label>
+							Serie
+							<input type="text" name="serie" [(ngModel)]="form.serie">
+						</label>
+						<label>
+							Folio
+							<input type="text" name="folio" [(ngModel)]="form.folio">
+						</label>
+						<label>
+							Tipo comprobante <span class="required-mark">*</span>
+							<input type="text" name="tipoComprobante" [(ngModel)]="form.tipoComprobante" required #tipoComprobante="ngModel"
+								[class.input-error]="tipoComprobante.invalid && (tipoComprobante.touched || formSubmitted)">
+							<span class="field-error" *ngIf="tipoComprobante.invalid && (tipoComprobante.touched || formSubmitted)">Obligatorio</span>
+						</label>
+						<label>
+							Estatus SAT
+							<input type="text" name="estatusSat" [(ngModel)]="form.estatusSat">
+						</label>
+					</div>
+				</section>
+
+				<section class="form-section">
+					<h3>Fechas clave</h3>
+					<div class="form-grid">
+						<label>
+							Fecha emision <span class="required-mark">*</span>
+							<input type="text" name="fechaEmision" [(ngModel)]="form.fechaEmision" placeholder="YYYY-MM-DD HH:mm:ss" required #fechaEmision="ngModel"
+								[class.input-error]="fechaEmision.invalid && (fechaEmision.touched || formSubmitted)">
+							<span class="field-error" *ngIf="fechaEmision.invalid && (fechaEmision.touched || formSubmitted)">Obligatorio</span>
+						</label>
+						<label>
+							Fecha timbrado
+							<input type="text" name="fechaTimbrado" [(ngModel)]="form.fechaTimbrado" placeholder="YYYY-MM-DD HH:mm:ss">
+						</label>
+						<label>
+							Lugar expedicion <span class="required-mark">*</span>
+							<input type="text" name="lugarExpedicion" [(ngModel)]="form.lugarExpedicion" required #lugarExpedicion="ngModel"
+								[class.input-error]="lugarExpedicion.invalid && (lugarExpedicion.touched || formSubmitted)">
+							<span class="field-error" *ngIf="lugarExpedicion.invalid && (lugarExpedicion.touched || formSubmitted)">Obligatorio</span>
+						</label>
+						<label>
+							Exportacion <span class="required-mark">*</span>
+							<input type="text" name="exportacion" [(ngModel)]="form.exportacion" [required]="isCfdi4()" #exportacion="ngModel"
+								[class.input-error]="exportacion.invalid && isCfdi4() && (exportacion.touched || formSubmitted)">
+							<span class="field-error" *ngIf="exportacion.invalid && isCfdi4() && (exportacion.touched || formSubmitted)">Obligatorio en CFDI 4.0</span>
+						</label>
+					</div>
+				</section>
+
+				<section class="form-section">
+					<h3>Emisor</h3>
+					<div class="form-grid">
+						<label>
+							RFC emisor <span class="required-mark">*</span>
+							<input type="text" name="rfcEmisor" [(ngModel)]="form.rfcEmisor" required #rfcEmisor="ngModel"
+								[class.input-error]="rfcEmisor.invalid && (rfcEmisor.touched || formSubmitted)">
+							<span class="field-error" *ngIf="rfcEmisor.invalid && (rfcEmisor.touched || formSubmitted)">Obligatorio</span>
+						</label>
+						<label>
+							Nombre emisor <span class="required-mark">*</span>
+							<input type="text" name="nombreEmisor" [(ngModel)]="form.nombreEmisor" required #nombreEmisor="ngModel"
+								[class.input-error]="nombreEmisor.invalid && (nombreEmisor.touched || formSubmitted)">
+							<span class="field-error" *ngIf="nombreEmisor.invalid && (nombreEmisor.touched || formSubmitted)">Obligatorio</span>
+						</label>
+						<label>
+							Regimen emisor <span class="required-mark">*</span>
+							<input type="text" name="regimenEmisor" [(ngModel)]="form.regimenEmisor" required #regimenEmisor="ngModel"
+								[class.input-error]="regimenEmisor.invalid && (regimenEmisor.touched || formSubmitted)">
+							<span class="field-error" *ngIf="regimenEmisor.invalid && (regimenEmisor.touched || formSubmitted)">Obligatorio</span>
+						</label>
+					</div>
+				</section>
+
+				<section class="form-section">
+					<h3>Receptor</h3>
+					<div class="form-grid">
+						<label>
+							RFC receptor <span class="required-mark">*</span>
+							<input type="text" name="rfcReceptor" [(ngModel)]="form.rfcReceptor" required #rfcReceptor="ngModel"
+								[class.input-error]="rfcReceptor.invalid && (rfcReceptor.touched || formSubmitted)">
+							<span class="field-error" *ngIf="rfcReceptor.invalid && (rfcReceptor.touched || formSubmitted)">Obligatorio</span>
+						</label>
+						<label>
+							Nombre receptor <span class="required-mark">*</span>
+							<input type="text" name="nombreReceptor" [(ngModel)]="form.nombreReceptor" required #nombreReceptor="ngModel"
+								[class.input-error]="nombreReceptor.invalid && (nombreReceptor.touched || formSubmitted)">
+							<span class="field-error" *ngIf="nombreReceptor.invalid && (nombreReceptor.touched || formSubmitted)">Obligatorio</span>
+						</label>
+						<label>
+							Domicilio fiscal <span class="required-mark">*</span>
+							<input type="text" name="domicilioFiscalReceptor" [(ngModel)]="form.domicilioFiscalReceptor" [required]="isCfdi4()" #domicilioFiscalReceptor="ngModel"
+								[class.input-error]="domicilioFiscalReceptor.invalid && isCfdi4() && (domicilioFiscalReceptor.touched || formSubmitted)">
+							<span class="field-error" *ngIf="domicilioFiscalReceptor.invalid && isCfdi4() && (domicilioFiscalReceptor.touched || formSubmitted)">Obligatorio en CFDI 4.0</span>
+						</label>
+						<label>
+							Regimen receptor <span class="required-mark">*</span>
+							<input type="text" name="regimenReceptor" [(ngModel)]="form.regimenReceptor" [required]="isCfdi4()" #regimenReceptor="ngModel"
+								[class.input-error]="regimenReceptor.invalid && isCfdi4() && (regimenReceptor.touched || formSubmitted)">
+							<span class="field-error" *ngIf="regimenReceptor.invalid && isCfdi4() && (regimenReceptor.touched || formSubmitted)">Obligatorio en CFDI 4.0</span>
+						</label>
+						<label>
+							Uso CFDI <span class="required-mark">*</span>
+							<input type="text" name="usoCfdi" [(ngModel)]="form.usoCfdi" required #usoCfdi="ngModel"
+								[class.input-error]="usoCfdi.invalid && (usoCfdi.touched || formSubmitted)">
+							<span class="field-error" *ngIf="usoCfdi.invalid && (usoCfdi.touched || formSubmitted)">Obligatorio</span>
+						</label>
+					</div>
+				</section>
+
+				<section class="form-section">
+					<h3>Montos</h3>
+					<div class="form-grid">
+						<label>
+							Moneda <span class="required-mark">*</span>
+							<input type="text" name="moneda" [(ngModel)]="form.moneda" required #moneda="ngModel"
+								[class.input-error]="moneda.invalid && (moneda.touched || formSubmitted)">
+							<span class="field-error" *ngIf="moneda.invalid && (moneda.touched || formSubmitted)">Obligatorio</span>
+						</label>
+						<label>
+							Tipo cambio <span class="required-mark">*</span>
+							<input type="text" name="tipoCambio" [(ngModel)]="form.tipoCambio" [required]="isTipoCambioRequired()" #tipoCambio="ngModel"
+								[class.input-error]="tipoCambio.invalid && isTipoCambioRequired() && (tipoCambio.touched || formSubmitted)">
+							<span class="field-error" *ngIf="tipoCambio.invalid && isTipoCambioRequired() && (tipoCambio.touched || formSubmitted)">Obligatorio si Moneda no es MXN</span>
+						</label>
+						<label>
+							Subtotal <span class="required-mark">*</span>
+							<input type="text" name="subtotal" [(ngModel)]="form.subtotal" required #subtotal="ngModel"
+								[class.input-error]="subtotal.invalid && (subtotal.touched || formSubmitted)">
+							<span class="field-error" *ngIf="subtotal.invalid && (subtotal.touched || formSubmitted)">Obligatorio</span>
+						</label>
+						<label>
+							Descuento
+							<input type="text" name="descuento" [(ngModel)]="form.descuento">
+						</label>
+						<label>
+							Total <span class="required-mark">*</span>
+							<input type="text" name="total" [(ngModel)]="form.total" required #total="ngModel"
+								[class.input-error]="total.invalid && (total.touched || formSubmitted)">
+							<span class="field-error" *ngIf="total.invalid && (total.touched || formSubmitted)">Obligatorio</span>
+						</label>
+					</div>
+				</section>
+
+				<section class="form-section">
+					<h3>Pago</h3>
+					<div class="form-grid">
+						<label>
+							Metodo pago <span class="required-mark">*</span>
+							<input type="text" name="metodoPago" [(ngModel)]="form.metodoPago" [required]="isFormaMetodoPagoRequired()" #metodoPago="ngModel"
+								[class.input-error]="metodoPago.invalid && isFormaMetodoPagoRequired() && (metodoPago.touched || formSubmitted)">
+							<span class="field-error" *ngIf="metodoPago.invalid && isFormaMetodoPagoRequired() && (metodoPago.touched || formSubmitted)">Obligatorio salvo tipo P</span>
+						</label>
+						<label>
+							Forma pago <span class="required-mark">*</span>
+							<input type="text" name="formaPago" [(ngModel)]="form.formaPago" [required]="isFormaMetodoPagoRequired()" #formaPago="ngModel"
+								[class.input-error]="formaPago.invalid && isFormaMetodoPagoRequired() && (formaPago.touched || formSubmitted)">
+							<span class="field-error" *ngIf="formaPago.invalid && isFormaMetodoPagoRequired() && (formaPago.touched || formSubmitted)">Obligatorio salvo tipo P</span>
+						</label>
+					</div>
+				</section>
+
+				<section class="form-section">
+					<h3>Sellos y certificados</h3>
+					<div class="form-grid">
+						<label>
+							No. certificado <span class="required-mark">*</span>
+							<input type="text" name="noCertificado" [(ngModel)]="form.noCertificado" required #noCertificado="ngModel"
+								[class.input-error]="noCertificado.invalid && (noCertificado.touched || formSubmitted)">
+							<span class="field-error" *ngIf="noCertificado.invalid && (noCertificado.touched || formSubmitted)">Obligatorio</span>
+						</label>
+						<label>
+							No. certificado SAT
+							<input type="text" name="noCertificadoSat" [(ngModel)]="form.noCertificadoSat">
+						</label>
+						<label>
+							RFC PAC
+							<input type="text" name="rfcPac" [(ngModel)]="form.rfcPac">
+						</label>
+						<label class="span-2">
+							Sello CFD <span class="required-mark">*</span>
+							<textarea name="selloCfd" [(ngModel)]="form.selloCfd" rows="2" required #selloCfd="ngModel"
+								[class.input-error]="selloCfd.invalid && (selloCfd.touched || formSubmitted)"></textarea>
+							<span class="field-error" *ngIf="selloCfd.invalid && (selloCfd.touched || formSubmitted)">Obligatorio</span>
+						</label>
+						<label class="span-2">
+							Sello SAT
+							<textarea name="selloSat" [(ngModel)]="form.selloSat" rows="2"></textarea>
+						</label>
+					</div>
+				</section>
+
+				<section class="form-section">
+					<h3>XML adjunto</h3>
+					<div class="form-grid">
+						<label class="span-2">
+							Ruta XML
+							<input type="text" name="rutaXml" [(ngModel)]="form.rutaXml" placeholder="/ruta/archivo.xml">
+						</label>
+						<label class="span-2">
+							XML original
+							<textarea name="xmlOriginal" [value]="xmlRaw" rows="6" readonly></textarea>
+						</label>
+					</div>
+				</section>
+			</form>
+		</main>
+	</div>
+</section>

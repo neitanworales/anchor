@@ -10,6 +10,10 @@ abstract class CrudController extends BaseController
 
     public function index($request)
     {
+        if (!$this->requireAuth()) {
+            return $this->fail('unauthorized', 401);
+        }
+
         $limit = isset($request['limit']) ? (int) $request['limit'] : 100;
         $offset = isset($request['offset']) ? (int) $request['offset'] : 0;
 
@@ -21,6 +25,10 @@ abstract class CrudController extends BaseController
 
     public function detail($request)
     {
+        if (!$this->requireAuth()) {
+            return $this->fail('unauthorized', 401);
+        }
+
         $id = isset($request['id']) ? (int) $request['id'] : 0;
         if ($id <= 0) {
             return $this->fail('id is required', 422);
@@ -38,6 +46,10 @@ abstract class CrudController extends BaseController
 
     public function create($request)
     {
+        if (!$this->requireAuth()) {
+            return $this->fail('unauthorized', 401);
+        }
+
         $payload = $this->extractPayload($request);
         if (empty($payload)) {
             return $this->fail('payload is required', 422);
@@ -56,6 +68,10 @@ abstract class CrudController extends BaseController
 
     public function update($request)
     {
+        if (!$this->requireAuth()) {
+            return $this->fail('unauthorized', 401);
+        }
+
         $id = isset($request['id']) ? (int) $request['id'] : 0;
         if ($id <= 0) {
             return $this->fail('id is required', 422);
@@ -79,6 +95,10 @@ abstract class CrudController extends BaseController
 
     public function delete($request)
     {
+        if (!$this->requireAuth()) {
+            return $this->fail('unauthorized', 401);
+        }
+
         $id = isset($request['id']) ? (int) $request['id'] : 0;
         if ($id <= 0) {
             return $this->fail('id is required', 422);

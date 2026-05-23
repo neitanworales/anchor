@@ -49,12 +49,32 @@ class FacturaRepository extends BaseRepository
 
     public function create(array $data)
     {
-        return $this->insertRow($data, $this->fillable);
+        return $this->insertRow($this->normalizePayload($data), $this->fillable);
     }
 
     public function updateById($id, array $data)
     {
-        return $this->updateRow($id, $data, $this->fillable);
+        return $this->updateRow($id, $this->normalizePayload($data), $this->fillable);
+    }
+
+    private function normalizePayload(array $data)
+    {
+        $nullableFields = array(
+            'fecha_emision',
+            'fecha_timbrado',
+            'tipo_cambio',
+            'subtotal',
+            'descuento',
+            'total',
+        );
+
+        foreach ($nullableFields as $field) {
+            if (array_key_exists($field, $data) && $data[$field] === '') {
+                $data[$field] = null;
+            }
+        }
+
+        return $data;
     }
 
     public function findByUserFilters(array $filters, $limit = 100, $offset = 0)

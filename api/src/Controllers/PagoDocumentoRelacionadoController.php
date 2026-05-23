@@ -14,6 +14,10 @@ class PagoDocumentoRelacionadoController extends CrudController
 
     public function listByPago($request)
     {
+        if (!$this->requireAuth()) {
+            return $this->fail('unauthorized', 401);
+        }
+
         $pagoId = isset($request['pagoId']) ? (int) $request['pagoId'] : (isset($request['pago_id']) ? (int) $request['pago_id'] : 0);
         if ($pagoId <= 0) {
             return $this->fail('pagoId is required', 422);

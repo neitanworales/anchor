@@ -20,4 +20,19 @@ class BaseController
             'details' => $details,
         );
     }
+
+    protected function requireAuth()
+    {
+        if (!function_exists('get_bearer_token')) {
+            return null;
+        }
+
+        $token = get_bearer_token();
+        if ($token === '') {
+            return null;
+        }
+
+        $auth = new AuthService();
+        return $auth->validateToken($token);
+    }
 }

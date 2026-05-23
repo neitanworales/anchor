@@ -14,6 +14,10 @@ class PagoController extends CrudController
 
     public function listByFactura($request)
     {
+        if (!$this->requireAuth()) {
+            return $this->fail('unauthorized', 401);
+        }
+
         $facturaId = isset($request['facturaId']) ? (int) $request['facturaId'] : (isset($request['factura_id']) ? (int) $request['factura_id'] : 0);
         if ($facturaId <= 0) {
             return $this->fail('facturaId is required', 422);

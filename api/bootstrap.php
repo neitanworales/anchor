@@ -63,3 +63,27 @@ function request_data()
 
     return $data;
 }
+
+function get_bearer_token()
+{
+    $header = '';
+
+    if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+        $header = trim($_SERVER['HTTP_AUTHORIZATION']);
+    } elseif (function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        if (isset($headers['Authorization'])) {
+            $header = trim($headers['Authorization']);
+        }
+    }
+
+    if ($header === '') {
+        return '';
+    }
+
+    if (stripos($header, 'Bearer ') === 0) {
+        return trim(substr($header, 7));
+    }
+
+    return '';
+}

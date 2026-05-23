@@ -2,6 +2,8 @@
 
 require_once __DIR__ . '/CrudController.php';
 require_once __DIR__ . '/../Repository/FacturaRepository.php';
+require_once __DIR__ . '/../Repository/FacturaUsuarioRepository.php';
+require_once __DIR__ . '/../Services/AuthService.php';
 
 class FacturaController extends CrudController
 {
@@ -14,6 +16,10 @@ class FacturaController extends CrudController
 
     public function listByUsuario($request)
     {
+        if (!$this->requireAuth()) {
+            return $this->fail('unauthorized', 401);
+        }
+
         $registradoPor = isset($request['registradoPor']) ? (int) $request['registradoPor'] : 0;
         $aprobadoPor = isset($request['aprobadoPor']) ? (int) $request['aprobadoPor'] : 0;
 
@@ -49,5 +55,35 @@ class FacturaController extends CrudController
         return $this->ok(array(
             'items' => $this->camelize($rows),
         ), 'facturas list');
+    }
+
+    public function create($request)
+    {
+        $user = $this->requireAuth();
+        if (!$user) {
+            return $this->fail('unauthorized', 401);
+        }
+
+        $payload = $this->extractPayload($request);
+        if (empty($payload)) {
+            return $this->fail('payload is required', 422);
+        }
+
+        $id = $this->repo->create($payload);
+        if (!$id) {
+            return $this->fail('failed to create factura', 500);
+        }
+
+        $facturaUsuarioRepo = new FacturaUsuarioRepository();
+        $facturaUsuarioRepo->create(array(
+            'usuario_id' => (int) $user->id,
+            'factura_id' => (int) $id,
+            'aprobado' => 0,
+        ));
+
+        $row = $this->repo->findById($id);
+        return $this->ok(array(
+            'item' => $this->camelize($row),
+        ), 'factura created');
     }
 }

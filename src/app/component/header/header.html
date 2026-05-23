@@ -1,18 +1,17 @@
-<div class="container">
-    <header
-        class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
-        <div class="col-md-3 mb-2 mb-md-0">
-            <a routerLink="/" class="d-inline-flex link-body-emphasis text-decoration-none">
-                a . n . c . h . o . r
-            </a> 
+<header class="site-header">
+    <div class="header-shell">
+        <a routerLink="/" class="brand">
+            <img src="/assets/img/anchor_logo_single.png" alt="Anchor Logo">
+            <span>a.n.c.h.o.r</span>
+        </a>
+        <nav class="nav-links">
+            <a routerLink="/" class="nav-link">Home</a>
+            <a routerLink="/dashboard" class="nav-link">Dashboard</a>
+            <a routerLink="/factura/create" class="nav-link">Registrar</a>
+        </nav>
+        <div class="header-actions">
+            <a *ngIf="!isLoggedIn" type="button" class="ghost-btn" routerLink="/login">Login</a>
+            <button *ngIf="isLoggedIn" type="button" class="ghost-btn danger" (click)="logout()">Salir</button>
         </div>
-        <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-            <li><a routerLink="/" class="nav-link px-2">Home</a></li>
-            <li><a routerLink="/dashboard" class="nav-link px-2">Dashboard</a></li>
-        </ul>
-        <div class="col-md-3 text-end">
-            <a *ngIf="!isLoggedIn" type="button" class="btn btn-outline-primary me-2" routerLink="/login">Login</a>
-            <button *ngIf="isLoggedIn" type="button" class="btn btn-outline-danger me-2" (click)="logout()">Salir</button>
-        </div>
-    </header>
-</div>
+    </div>
+</header>
