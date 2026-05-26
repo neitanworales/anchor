@@ -13,17 +13,17 @@
 	<div class="stat-grid">
 		<article class="stat-card">
 			<h3>Facturas capturadas</h3>
-			<p class="stat-value">128</p>
+			<p class="stat-value">{{ summary.capturadasUltimos30 }}</p>
 			<span class="stat-meta">Ultimos 30 dias</span>
 		</article>
 		<article class="stat-card">
 			<h3>En revision</h3>
-			<p class="stat-value">24</p>
+			<p class="stat-value">{{ summary.enRevision }}</p>
 			<span class="stat-meta">Pendientes</span>
 		</article>
 		<article class="stat-card">
 			<h3>Aprobadas</h3>
-			<p class="stat-value">92</p>
+			<p class="stat-value">{{ summary.aprobadas }}</p>
 			<span class="stat-meta">Acumulado mensual</span>
 		</article>
 	</div>
@@ -33,21 +33,17 @@
 			<h2>Actividad reciente</h2>
 			<button class="ghost-btn">Ver todo</button>
 		</div>
+		<p class="hint" *ngIf="isLoading">Cargando actividad...</p>
+		<p class="alert alert-error" *ngIf="errorMessage">{{ errorMessage }}</p>
 		<ul class="activity-list">
-			<li>
+			<li *ngFor="let item of activity">
 				<span class="dot"></span>
-				CFDI 4.0 - ACME Logistics - Capturado por Pedro Morales
-				<small>hace 2 horas</small>
+				{{ getActivityTitle(item) }} - {{ getActivityStatus(item) }}
+				<small>{{ item.dateCreated }}</small>
 			</li>
-			<li>
+			<li *ngIf="!isLoading && !activity.length">
 				<span class="dot"></span>
-				CFDI 3.3 - Nova Retail - Aprobado por Ana Diaz
-				<small>hace 5 horas</small>
-			</li>
-			<li>
-				<span class="dot"></span>
-				CFDI 4.0 - Mandala Foods - En validacion SAT
-				<small>ayer</small>
+				Sin actividad reciente
 			</li>
 		</ul>
 	</section>

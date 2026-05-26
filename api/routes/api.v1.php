@@ -45,6 +45,10 @@ $router->add('GET', '/api/v1/facturas/por_usuario', function ($request) use ($fa
     return $facturaController->listByUsuario($request);
 });
 
+$router->add('GET', '/api/v1/dashboard', function ($request) use ($facturaController) {
+    return $facturaController->dashboardSummary($request);
+});
+
 $router->add('GET', '/api/v1/facturas/conceptos', function ($request) use ($facturaConceptoController) {
     return $facturaConceptoController->listByFactura($request);
 });

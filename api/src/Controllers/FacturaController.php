@@ -86,4 +86,21 @@ class FacturaController extends CrudController
             'item' => $this->camelize($row),
         ), 'factura created');
     }
+
+    public function dashboardSummary($request)
+    {
+        $user = $this->requireAuth();
+        if (!$user) {
+            return $this->fail('unauthorized', 401);
+        }
+
+        $days = isset($request['days']) ? (int) $request['days'] : 30;
+        $limit = isset($request['limit']) ? (int) $request['limit'] : 5;
+
+        $data = $this->repo->getDashboardSummary((int) $user->id, $days, $limit);
+        return $this->ok(array(
+            'summary' => $this->camelize($data['summary']),
+            'activity' => $this->camelize($data['activity']),
+        ), 'dashboard summary');
+    }
 }

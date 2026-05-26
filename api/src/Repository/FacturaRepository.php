@@ -122,6 +122,56 @@ class FacturaRepository extends BaseRepository
         return $rows;
     }
 
+    public function getDashboardSummary($userId, $days = 30, $limit = 5)
+    {
+        $summary = array(
+            'capturadas_ultimos_30' => 0,
+            'en_revision' => 0,
+            'aprobadas' => 0,
+        );
+
+        $sql = 'SELECT '
+            . 'COUNT(*) AS total, '
+            . 'SUM(CASE WHEN fu.aprobado = 0 THEN 1 ELSE 0 END) AS en_revision, '
+            . 'SUM(CASE WHEN fu.aprobado = 1 THEN 1 ELSE 0 END) AS aprobadas, '
+            . 'SUM(CASE WHEN fu.date_created >= (NOW() - INTERVAL ? DAY) THEN 1 ELSE 0 END) AS capturadas_ultimos_30 '
+            . 'FROM factura_usuarios fu '
+            . 'WHERE fu.usuario_id = ?';
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param('ii', $days, $userId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+
+        if ($row) {
+            $summary['capturadas_ultimos_30'] = (int) $row['capturadas_ultimos_30'];
+            $summary['en_revision'] = (int) $row['en_revision'];
+            $summary['aprobadas'] = (int) $row['aprobadas'];
+        }
+
+        $sql = 'SELECT f.tipo_comprobante, f.nombre_emisor, f.estatus_sat, '
+            . 'fu.aprobado, fu.aprobado_por, fu.date_created '
+            . 'FROM factura_usuarios fu '
+            . 'INNER JOIN facturas f ON f.id = fu.factura_id '
+            . 'WHERE fu.usuario_id = ? '
+            . 'ORDER BY fu.date_created DESC '
+            . 'LIMIT ?';
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param('ii', $userId, $limit);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $activity = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        return array(
+            'summary' => $summary,
+            'activity' => $activity,
+        );
+    }
+
     private function addFilter(array &$conditions, array &$params, string &$types, string $clause, string $key, array $filters, string $type)
     {
         if (!isset($filters[$key]) || $filters[$key] === '') {
