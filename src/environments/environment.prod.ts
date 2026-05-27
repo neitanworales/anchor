@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
-    baseSite: 'www.anchor.com/',
-    apiUrl: 'https://api.anchor.com/v1/',
+    baseSite: 'www.neitanmorales.com/anchor',
+    apiUrl: 'https://www.neitanworales.com/api/anchor/public/api/v1',
 };

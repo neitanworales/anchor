@@ -122,7 +122,7 @@ class FacturaRepository extends BaseRepository
         return $rows;
     }
 
-    public function getDashboardSummary($userId, $days = 30, $limit = 5)
+    public function getDashboardSummary($userId, $days = 30, $limit = 5, array $filters = array())
     {
         $summary = array(
             'capturadas_ultimos_30' => 0,
@@ -130,16 +130,44 @@ class FacturaRepository extends BaseRepository
             'aprobadas' => 0,
         );
 
+        $conditions = array('fu.usuario_id = ?');
+        $params = array($userId);
+        $types = 'i';
+
+        $aprobado = isset($filters['aprobado']) ? $filters['aprobado'] : null;
+        if ($aprobado !== null && $aprobado !== '') {
+            $conditions[] = 'fu.aprobado = ?';
+            $params[] = (int) $aprobado;
+            $types .= 'i';
+        }
+
+        $tipoComprobante = isset($filters['tipoComprobante']) ? $filters['tipoComprobante'] : null;
+        $joinFacturas = $tipoComprobante !== null && $tipoComprobante !== '';
+        if ($joinFacturas) {
+            $conditions[] = 'f.tipo_comprobante = ?';
+            $params[] = $tipoComprobante;
+            $types .= 's';
+        }
+
+        $from = $joinFacturas
+            ? 'factura_usuarios fu INNER JOIN facturas f ON f.id = fu.factura_id'
+            : 'factura_usuarios fu';
+
         $sql = 'SELECT '
             . 'COUNT(*) AS total, '
             . 'SUM(CASE WHEN fu.aprobado = 0 THEN 1 ELSE 0 END) AS en_revision, '
             . 'SUM(CASE WHEN fu.aprobado = 1 THEN 1 ELSE 0 END) AS aprobadas, '
             . 'SUM(CASE WHEN fu.date_created >= (NOW() - INTERVAL ? DAY) THEN 1 ELSE 0 END) AS capturadas_ultimos_30 '
-            . 'FROM factura_usuarios fu '
-            . 'WHERE fu.usuario_id = ?';
+            . 'FROM ' . $from
+            . ' WHERE ' . implode(' AND ', $conditions);
+
+        $summaryParams = $params;
+        $summaryTypes = $types;
+        array_splice($summaryParams, 0, 0, array($days));
+        $summaryTypes = substr_replace($summaryTypes, 'i', 0, 0);
 
         $stmt = $this->db->prepare($sql);
-        $stmt->bind_param('ii', $days, $userId);
+        $this->bindDynamicParams($stmt, $summaryTypes, $summaryParams);
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
@@ -155,12 +183,16 @@ class FacturaRepository extends BaseRepository
             . 'fu.aprobado, fu.aprobado_por, fu.date_created '
             . 'FROM factura_usuarios fu '
             . 'INNER JOIN facturas f ON f.id = fu.factura_id '
-            . 'WHERE fu.usuario_id = ? '
-            . 'ORDER BY fu.date_created DESC '
+            . 'WHERE ' . implode(' AND ', $conditions)
+            . ' ORDER BY fu.date_created DESC '
             . 'LIMIT ?';
 
+        $activityParams = $params;
+        $activityParams[] = (int) $limit;
+        $activityTypes = $types . 'i';
+
         $stmt = $this->db->prepare($sql);
-        $stmt->bind_param('ii', $userId, $limit);
+        $this->bindDynamicParams($stmt, $activityTypes, $activityParams);
         $stmt->execute();
         $result = $stmt->get_result();
         $activity = $result->fetch_all(MYSQLI_ASSOC);

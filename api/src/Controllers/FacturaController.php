@@ -97,7 +97,12 @@ class FacturaController extends CrudController
         $days = isset($request['days']) ? (int) $request['days'] : 30;
         $limit = isset($request['limit']) ? (int) $request['limit'] : 5;
 
-        $data = $this->repo->getDashboardSummary((int) $user->id, $days, $limit);
+        $filters = array(
+            'aprobado' => isset($request['aprobado']) && $request['aprobado'] !== '' ? (int) $request['aprobado'] : null,
+            'tipoComprobante' => isset($request['tipoComprobante']) ? $request['tipoComprobante'] : null,
+        );
+
+        $data = $this->repo->getDashboardSummary((int) $user->id, $days, $limit, $filters);
         return $this->ok(array(
             'summary' => $this->camelize($data['summary']),
             'activity' => $this->camelize($data['activity']),

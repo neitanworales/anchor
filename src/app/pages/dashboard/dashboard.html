@@ -10,11 +10,48 @@
 		</div>
 	</header>
 
+	<div class="dashboard-filters">
+		<label>
+			Periodo
+			<select [(ngModel)]="daysFilter" (change)="applyFilters()">
+				<option [ngValue]="7">7 dias</option>
+				<option [ngValue]="30">30 dias</option>
+				<option [ngValue]="90">90 dias</option>
+			</select>
+		</label>
+		<label>
+			Estado
+			<select [(ngModel)]="statusFilter" (change)="applyFilters()">
+				<option value="all">Todos</option>
+				<option value="pending">En revision</option>
+				<option value="approved">Aprobadas</option>
+			</select>
+		</label>
+		<label>
+			Tipo CFDI
+			<select [(ngModel)]="tipoComprobanteFilter" (change)="applyFilters()">
+				<option value="all">Todos</option>
+				<option value="I">Ingreso (I)</option>
+				<option value="E">Egreso (E)</option>
+				<option value="P">Pago (P)</option>
+			</select>
+		</label>
+		<label>
+			Actividad
+			<select [(ngModel)]="activityLimit" (change)="applyFilters()">
+				<option [ngValue]="5">5 items</option>
+				<option [ngValue]="10">10 items</option>
+				<option [ngValue]="20">20 items</option>
+			</select>
+		</label>
+		<button class="ghost-btn" type="button" (click)="applyFilters()">Actualizar</button>
+	</div>
+
 	<div class="stat-grid">
 		<article class="stat-card">
 			<h3>Facturas capturadas</h3>
 			<p class="stat-value">{{ summary.capturadasUltimos30 }}</p>
-			<span class="stat-meta">Ultimos 30 dias</span>
+			<span class="stat-meta">Ultimos {{ daysFilter }} dias</span>
 		</article>
 		<article class="stat-card">
 			<h3>En revision</h3>
@@ -33,7 +70,7 @@
 			<h2>Actividad reciente</h2>
 			<button class="ghost-btn">Ver todo</button>
 		</div>
-		<p class="hint" *ngIf="isLoading">Cargando actividad...</p>
+		<p class="hint" *ngIf="isLoading && !activity.length">Cargando actividad...</p>
 		<p class="alert alert-error" *ngIf="errorMessage">{{ errorMessage }}</p>
 		<ul class="activity-list">
 			<li *ngFor="let item of activity">

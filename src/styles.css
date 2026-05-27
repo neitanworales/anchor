@@ -153,8 +153,8 @@
 }
 
 .form-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	/*display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));*/
 	gap: 16px;
 }
 
@@ -163,6 +163,7 @@ label {
 	gap: 6px;
 	font-size: 0.85rem;
 	color: var(--muted);
+    margin-top: 1em;
 }
 
 input,
@@ -235,9 +236,9 @@ textarea {
 }
 
 .header-shell {
-	display: flex;
+	display: grid;
+	grid-template-columns: auto 1fr auto;
 	align-items: center;
-	justify-content: space-between;
 	gap: 20px;
 	padding: 16px clamp(16px, 4vw, 56px);
 }
@@ -251,11 +252,11 @@ textarea {
 	font-weight: 600;
 	letter-spacing: 0.12em;
 	text-transform: uppercase;
+	justify-self: start;
 }
 
 .brand img {
-	width: 36px;
-	height: 36px;
+	width: 200px;
 	object-fit: contain;
 }
 
@@ -263,6 +264,8 @@ textarea {
 	display: flex;
 	gap: 18px;
 	flex-wrap: wrap;
+	justify-content: center;
+	justify-self: center;
 }
 
 .nav-link {
@@ -283,6 +286,7 @@ textarea {
 .header-actions {
 	display: flex;
 	gap: 12px;
+	justify-self: end;
 }
 
 .site-header .ghost-btn {
@@ -303,19 +307,23 @@ textarea {
 
 @media (max-width: 860px) {
 	.header-shell {
-		flex-direction: column;
-		align-items: flex-start;
+		grid-template-columns: 1fr;
+		justify-items: flex-start;
+	}
+
+	.nav-links {
+		justify-content: flex-start;
 	}
 }
 
 .login-page {
-	min-height: 100vh;
+	min-height: 50vh;
 	display: grid;
 	place-items: center;
 	padding: 48px 16px;
-	background: radial-gradient(circle at top right, rgba(60, 158, 200, 0.18), transparent 50%),
+	/*background: radial-gradient(circle at top right, rgba(60, 158, 200, 0.18), transparent 50%),
 		radial-gradient(circle at 20% 80%, rgba(22, 22, 22, 0.08), transparent 55%),
-		var(--paper);
+		var(--paper);*/
 	font-family: 'Space Grotesk', sans-serif;
 	color: var(--ink);
 }
@@ -333,10 +341,34 @@ textarea {
 .login-brand {
 	display: grid;
 	gap: 16px;
+	justify-items: center;
+	text-align: center;
 }
 
 .login-brand img {
 	width: 140px;
+	margin: 0 auto;
+}
+
+.dashboard-filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	align-items: flex-end;
+	margin: 16px 0 24px;
+}
+
+.dashboard-filters label {
+	min-width: 160px;
+}
+
+.dashboard-filters select {
+	border: 1px solid rgba(22, 22, 22, 0.12);
+	border-radius: 12px;
+	padding: 10px 12px;
+	font-family: inherit;
+	background: #fff;
+	color: var(--ink);
 }
 
 .login-brand h1 {
@@ -350,6 +382,7 @@ textarea {
 	justify-content: space-between;
 	flex-wrap: wrap;
 	gap: 12px;
+    margin-top: 2em;
 }
 
 .checkline {
@@ -374,9 +407,9 @@ textarea {
 .dashboard-page {
 	min-height: 100vh;
 	padding: 48px clamp(16px, 4vw, 56px) 80px;
-	background: radial-gradient(circle at top left, rgba(60, 158, 200, 0.18), transparent 55%),
+	/*background: radial-gradient(circle at top left, rgba(60, 158, 200, 0.18), transparent 55%),
 		radial-gradient(circle at 20% 70%, rgba(22, 22, 22, 0.08), transparent 50%),
-		var(--paper);
+		var(--paper);*/
 	color: var(--ink);
 	font-family: 'Space Grotesk', sans-serif;
 }

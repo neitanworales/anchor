@@ -1,4 +1,9 @@
 RewriteEngine On
+RewriteBase /api/anchor/public/
+
+# Forward Authorization header to PHP
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
 # Serve existing files directly
 RewriteCond %{REQUEST_FILENAME} -f [OR]

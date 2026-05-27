@@ -14,11 +14,23 @@ export class FacturaDao {
         return this.http.post<any>(this.utils.v1('/facturas'), payload, { headers: this.utils.getHeaders(true) });
     }
 
-    public getDashboardSummary(days = 30, limit = 5): Observable<any> {
-        const params = new URLSearchParams({
+    public getDashboardSummary(days = 30, limit = 5, status = 'all', tipoComprobante = 'all'): Observable<any> {
+        const params: Record<string, string> = {
             days: String(days),
             limit: String(limit)
-        }).toString();
-        return this.http.get<any>(`${this.utils.v1('/dashboard')}?${params}`, { headers: this.utils.getHeaders(true) });
+        };
+
+        if (status === 'approved') {
+            params['aprobado'] = '1';
+        } else if (status === 'pending') {
+            params['aprobado'] = '0';
+        }
+
+        if (tipoComprobante !== 'all') {
+            params['tipoComprobante'] = tipoComprobante;
+        }
+
+        const query = new URLSearchParams(params).toString();
+        return this.http.get<any>(`${this.utils.v1('/dashboard')}?${query}`, { headers: this.utils.getHeaders(true) });
     }
 }
